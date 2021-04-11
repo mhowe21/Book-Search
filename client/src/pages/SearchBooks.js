@@ -13,7 +13,8 @@ import Auth from "../utils/auth";
 import { searchGoogleBooks } from "../utils/API";
 import { saveBookIds, getSavedBookIds } from "../utils/localStorage";
 import { SAVE_BOOK } from "../utils/mutations";
-import { useMutation } from "@apollo/client";
+import { QUERY_USER, QUERY_ME } from "../utils/queries";
+import { from, useMutation } from "@apollo/react-hooks";
 
 //import { from } from "apollo-link";
 
@@ -22,16 +23,16 @@ const SearchBooks = () => {
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState("");
-  const [saveBook] = useMutation(SAVE_BOOK);
+  const [saveBook, { error }] = useMutation(SAVE_BOOK);
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
-  useEffect(() => {
-    return () => saveBookIds(savedBookIds);
-  });
+  // useEffect(() => {
+  //   return () => saveBookIds(savedBookIds);
+  // });
 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
@@ -78,7 +79,16 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await saveBook({ bookToSave, token });
+      const response = await saveBook({
+        variables: {
+          authors: bookId.authors,
+          description: bookId.description,
+          title: bookId.title,
+          bookId: bookId.id,
+          image: bookId.image,
+          link: bookId.link,
+        },
+      });
       console.log(bookToSave);
       if (!response.ok) {
         throw new Error("something went wrong!");
