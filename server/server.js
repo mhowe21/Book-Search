@@ -3,7 +3,7 @@ const path = require('path');
 const db = require('./config/connection');
 const {ApolloServer} = require('apollo-server-express');
 const resolvers = require('./schemas/resolvers');
-//const typeDefs = require("./schemas/typeDefs")
+const typeDefs = require("./schemas/typeDefs")
 const routes = require('./routes');
 
 const app = express();
